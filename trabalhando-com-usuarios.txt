@@ -1,0 +1,218 @@
+### TRABALHANDO COM USUÁRIOS ###
+
+CRIANDO USUÁRIO
+useradd ricardo
+
+EXCLUINDO USUÁRIO
+userdel -f ricardo
+
+CRIANDO USUÁRIO COM DIRETÓRIO HOME E COM DESCRIÇÃO DE NOME COMPLETO
+useradd ricardo -m -c "Ricardo Yamamoto"
+
+CRIANDO UMA SENHA
+passwd ricardo
+
+LOGANDO COM NOVO USUÁRIO
+su ricardo
+
+VERIFICAR AJUDA DE CHSH
+chsh --help
+
+  -h, --help                    display this help message and exit
+  -R, --root CHROOT_DIR         directory to chroot into
+  -s, --shell SHELL             new login shell for the user account
+
+ADICIONADO BASH PARA USUÁRIO
+chsh -s /bin/bash ricardo
+
+VERIIFICAR AJUDA DE USERDEL
+userdel --help
+
+  -f, --force                   force removal of files,
+                                even if not owned by user
+  -h, --help                    display this help message and exit
+  -r, --remove                  remove home directory and mail spool
+  -R, --root CHROOT_DIR         directory to chroot into
+  -P, --prefix PREFIX_DIR       prefix directory where are located the /etc/* files
+      --extrausers              Use the extra users database
+  -Z, --selinux-user            remove any SELinux user mapping for the user
+
+EXCLUI USUÁRIO COM O DIRETÓRIO HOME
+userdel -r -f ricardo
+
+CRIANDO USUÁRIO COM DIRETÓRIO HOME, NOME COMPLETO E BASH
+useradd ricardo -m -c "Ricardo Yamamoto" -s /bin/bash
+
+INSERINDO SENHA PARA O USUÁRIO
+passwd ricardo
+
+LOGANDO COM O USUÁRIO
+su ricardo
+
+QUEM SOU EU
+whoami
+ricardo
+
+
+### EDITANDO INFORMAÇÕES DO USUÁRIO ###
+
+CRIANDO UM USUÁRIO DE NOME GUEST COM PASTA HOME, DESCRIÇÃO VISITANTE E QUE A CONTA EXPIRA NO DIA 28/07/2022
+useradd guest -m -c "Visitante" -e 28/07/2022
+
+ALTERAR ALGUMA CONFIGURAÇÃO DO USUÁRIO JÁ CRIADO, NO CASO INSERINDO BASH
+usermod guest -s /bin/bash
+
+ALTERAR DESCRIÇÃO DO USUÁRIO JÁ CRIADO
+usermod guest -c "Visitante Especial"
+
+ALTERANDO A SENHA, SERÁ EXIGIDO QUE O USUÁRIO ALTERE A SENHA NO PRIMEIRO LOGIN
+passwd guest -e 
+passwd: password expiry information changed.
+
+VISUALIZA TODOS OS USUÁRIOS DO SISTEMA
+cat /etc/passwd
+
+
+### SHELL SCRIPT - CRIANDO UM USUÁRIO EM LOTE ###
+
+CRIANDO USUÁRIO COM SENHA
+useradd convidado -p $(openssl passwd -crypt Senha123)
+
+CRIANDO UM SCRIPT
+nano nome-script.sh
+
+#!/bin/bash
+
+echo "Criando usuários do sistema"
+
+useradd guest01 -c "Usuário Convidado" -s /bin/bash -m -p $(openssl passwd -crypt Senha123)
+passwd guest01 -e
+
+useradd guest02 -c "Usuário Convidado" -s /bin/bash -m -p $(openssl passwd -crypt Senha123)
+passwd guest02 -e
+
+echo "Finalizado"
+
+DAR PERMISSÃO DE EXECUÇÃO AO SCRIPT
+chmod +x nome-script.sh
+
+EXECUTAR SCRIPT
+./nome-script.sh
+
+
+### ADICIONANDO USUÁRIOS A GRUPOS ###
+
+VISUALIZANDO TODOS OS GRUPOS DE USUÁRIO
+cat /etc/group
+
+AO TENTAR EXECUTAR ALGUM COMANDO QUE EXIGE PRIVILÉGIOS DE ADMINISTRADOR COM UM USUÁRIO
+sudo apt update
+ricardo is not in the sudoers file.  This incident will be reported.
+
+ADICIONANDO O USUÁRIO RICARDO AO GRUPO ADM E SUDO (UTILIZE O PARAMETRO -G MAIUSCULO PARA ADICIONAR MAIS DE UM GRUPO)
+usermod -G adm,sudo ricardo
+
+VISUALIZE NOVAMENTE OS GRUPOS E VEJA QUE O USUÁRIO RICARDO FOI ADICIONADO AOS GRUPOS ADM E SUDO
+cat etc/group
+
+adm:x:4:syslog,rhy,ricardo
+sudo:x:27:rhy,ricardo
+
+
+### CRIANDO NOVOS GRUPOS ###
+
+CRIANDO NOVOS GRUPOS
+groupadd GRP_ADM
+groupadd GRP_OPE
+groupadd GRP_TESTE
+
+EXCLUINDO UM GRUPO
+groupdel GRP_TESTE
+
+CRIANDO USUÁRIO E JÁ INFORMANDO O GRUPO QUE O USUÁRIO SERÁ ADICIONADO
+useradd priscila -G GRP_ADM
+useradd haruo -G GRP_OPE
+
+ADICIONANDO UM USUÁRIO JÁ EXISTENTE AO NOVO GRUPO (INFORME PRIMEIRO O GRUPO E DEPOIS O USUÁRIO)
+OBS. COM O PARAMETRO -G MAIUSCULO, ELE VAI REMOVER O USUÁRIO DO GRUPO ATUAL PARA SER INSERIDO NO NOVO GRUPO DESEJADO
+usermod -G GRP_ADM ricardo
+
+PARA ADICIONAR O USUÁRIO EM UM NOVO GRUPO SEM REMOVE-LOS DOS ATUAIS, INFORME CADA GRUPO QUE ELE DEVE ESTAR INSERIDO
+usermod -G adm,sudo,GRP_ADM ricardo
+
+REMOVER USUÁRIO SOMENTE DE UM GRUPO, USE O COMANDO GPASSWD COM PARAMETRO -D MINUSCULO (INFORME PRIMEIRO O USUÁRIO E DEPOIS O GRUPO A SER REMOVIDO)
+gpasswd -d ricardo GRP_ADM
+
+ADICIONAR USUÁRIO AO GRUPO SEM REMOVE-LOS DOS ATUAIS, UTILIZANDO COMANDO GPASSWD COM PARAMETRO -A MINUSCULO
+gpasswd -a ricardo GRP_OPE
+
+
+### CONHECENDO O SISTEMA DE PERMISSÕES ###
+
+EXECUTE O COMANDO LS NA PASTA HOME
+ls -l
+
+O PRIMEIRO CARACTERE INDICA SE É ARQUIVO (-) OU DIRETÓRIO (d) OU LINK (l)
+
+OS CARACTERES SEGUINTES INDICAM AS PERMISSÕES DE ACESSO
+
+R - READ - LEITURA
+W - WRITE - GRAVAÇÃO
+X - EXECUTE - EXECUÇÃO
+
+E ISSO SE REPETE 3X QUE REPRESENTAM QUEM TEM AS PERMISSÕES
+
+DONO
+GRUPO
+OUTROS
+
+COMO ROOT, CRIE UMA PASTA NA RAIZ / CHAMADA ADM
+mkdir /adm
+
+VISUALIZE AS PERMISSÕES
+ls- l
+
+A PASTA ADM, O DONO (ROOT) TEM TODAS AS PERMISSÕES (R,W,X) E O GRUPO (ROOT) E OS OUTROS TEM AS PERMISSÕES (R,X)
+
+EU QUERO ALTERAR O DONO E O GRUPO DA PASTA ADM, PARA ISSO UTILIZE O COMANDO CHOWN
+chown ricardo:GRP_ADM /adm/
+
+VEJA SE AS ALTERAÇÕES SURTIRAM EFEITO
+ls -l
+drwxr-xr-x   2 ricardo GRP_ADM       4096 Jul 28 01:44 adm
+
+
+### ALTERANDO AS PERMISSÕES DE UM DIRETÓRIO - ARQUIVO ###
+
+PARA REALIZAR ALTERAÇÕES DAS PERMISSÕES UTILIZAMOS O COMANDO CHMOD
+
+E A MELHOR FORMA É UTILIZANDO A BASE NÚMERICA A SEGUIR
+
+R - 4
+W - 2
+X - 1
+NENHUM - 0
+
+EU VEJO QUAIS PERMISSÕES DESEJO E SOMO A BASE NÚMERICA
+
+NA PASTA ADM, EU QUERO QUE O DONO TENHA TODAS PERMISSÕES (R,W,X), O GRUPO TENHA PERMISSÃO DE LEITURA E EXECUÇÃO (R,X) E OS OUTROS NÃO TENHAM NENHUMA PERMISSÃO (0)
+chmod 750 /adm
+
+
+### ENTENDENDO MELHOR AS PERMISSÕES DE EXECUÇÃO PARA SCRIPTS ###
+
+nano date.sh
+
+#!/bin/bash
+
+echo "Exibindo a data atual"
+
+date
+
+PARA DAR AO SCRIPT A PERMISSÃO DE EXECUÇÃO SOMENTE AO DONO DEVEMOS EXECUTAR O CHMOD
+chmod 744 date.sh
+
+PODE SER FEITO DA MANEIRA ABAIXO, PORÉM, CONCEDE PERMISSÃO DE EXECUÇÃO PARA O DONO, GRUPO E OUTROS
+chmod +x date.sh
+
+
