@@ -1,0 +1,50 @@
+SERVIDOR WEB
+
+INSTALANDO SERVIDOR WEB - APACHE2
+apt install apache2 -y
+
+VERIFICANDO STATUS DO SERVIÇO
+systemctl status apache2
+
+DIRETÓRIO PARA ARMAZENAR OS SITES
+/var/www/html/
+
+
+SERVIDOR DE BANCO DE DADOS
+
+INSTALANDO SERVIDOR DE BANCO DE DADOS - MYSQL-SERVER
+apt install mysql-server-8.0 -y
+
+CONECTAR NO MYSQL
+mysql
+
+CONECTANDO NO MYSQL COM USUÁRIO ROOT
+mysql -u root -p
+
+mysql>
+
+MOSTRAR TODOS OS BANCOS
+show databases;
+
+CRIANDO UM BANCO DE DADOS COM NOME DE MEUBANCO
+create database meubanco;
+
+ACESSAR O BANCO CRIADO
+use meubanco;
+
+CRIANDO UMA TABELA DE PESSOAS
+create table Pessoas (PessoaID int, Nome varchar(50), Sobrenome varchar(50), Endereco varchar(100), Cidade varchar(50));
+
+MOSTRAR TABLEAS
+show tables;
+
+REALIZANDO UM SELECT
+select * FROM Pessoas;
+
+INSERINDO DADOS NA TABELA PESSOAS
+insert INTO Pessoas (PessoaID, Nome, Sobrenome, Endereco, Cidade) VALUES (01, 'Ricardo', 'Yamamoto', 'Rua Sobe e Desce', 'São Paulo');
+
+REALIZANDO UM NOVO SELECT
+select * FROM Pessoas;
+
+exit
