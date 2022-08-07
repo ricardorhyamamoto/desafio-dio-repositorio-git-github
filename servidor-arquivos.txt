@@ -1,0 +1,42 @@
+INSTALAÇÃO DO SAMBA E CONFIGURAÇÃO INICIAL
+
+INSTALANDO O SAMBA
+apt install samba -y
+
+É RECOMENDADO UTILIZAR UM DISCO SEPARADO DO SO PARA O SERVIDOR DE ARQUIVOS
+
+VAMOS UTILIZAR O DISK2 QUE CRIAMOS ANTERIOMENTE E CRIAR DENTRO DELE UMA PASTA CHAMADA PUBLICA
+cd /disk2
+mkdir publica
+
+VAMOS ALTERAR AS PERMISSÕES DA PASTA PUBLICA PARA QUE TODOS TENHAM ACESSO DE LEITURA, ESCRITA E EXECUÇÃO
+chmod 777 publica
+
+VAMOS CONFIGURAR O ARQUIVO DE CONFIGURAÇÃO DO SAMBA - /ETC/SAMBA/SMB.CONF
+nano /etc/samba/smb.conf
+
+NO FINAL DO ARQUIVO VAMOS INSERIR OS COMANDOS A SEGUIR
+
+# CONFIGURANDO O SERVIDOR DE ARQUIVOS - BOOTCAMP LINUX DA DIO 08/2022
+# nome do compartilhamento, não precisa ser necessariamente o mesmo nome da pasta criado no disco
+[publica]
+# indicar o caminho da pasta
+path = /disk2/publica
+# liberado para gravação
+writable = yes
+# qualquer pessoa pode acessar
+guest ok = yes
+# todo mundo que acessar é um convidado
+guest only = yes
+
+PRECISAMOS REINICIAR O SERVIÇO DO SAMBA
+systemctl restart smbd
+
+PODEMOS VERIFICAR O STATUS DO SERVIÇO
+systemctl status smbd
+
+VAMOS HABILITAT O SERVIÇO SAMBA
+systemctl enable smbd
+
+
+CONFIGURANDO O ACESSO VIA MÁQUINA CLIENTE
