@@ -1,0 +1,40 @@
+CRIE UM SCRIPT CHAMADO SCRIPT-IAC2.SH NA PASTA DE SCRIPTS
+nano script-iac2.sh
+
+
+#!/bin/bash
+
+echo "Atualizando repositórios"
+apt-get update
+
+echo "Instalando possíveis atualizações"
+apt-get upgrade -y
+
+echo "Instalando o Apache2 e Unzip"
+apt-get install apache2 unzip -y
+
+echo "Acessando pasta tmp"
+cd /tmp
+
+echo "Baixando site no repositório do Github"
+wget https://github.com/ricardorhyamamoto/portal-nerdcine/archive/refs/heads/main.zip
+
+echo "Descompactando o site"
+unzip main.zip
+
+echo "Copiando o site para o diretório do Apache"
+cp -R portal-nerdcine-main /var/www/html/
+
+echo "Fim do script"
+
+
+
+MODIFIQUE A PERSMISSÃO PARA EXECUÇÃO
+chmod +x script-iac2.sh
+
+EXECUTE O SCRIPT
+./script-iac2.sh
+
+
+
+
